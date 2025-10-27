@@ -1,0 +1,36 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+actor "Администратор1" as User
+package "Система1" {
+    usecase "Регистрация посылок" as UC_RegisterOf
+    usecase "Создание записей" as UC_Creation
+}
+actor "Администратор2" as User1
+package "Система2" {
+    usecase "Выдача посылок" as UC_issuance
+    usecase "Формирование отчетов" as UC_report
+    usecase "поиск посылок" as UC_search
+    usecase "изменение статуса" as UC_status
+    usecase "Отправка уведомлений" as UC_notific
+}
+package "Система3" {
+    usecase "Проверка данных" as UC_data
+}
+actor "Пользователь" as User2
+User --> UC_RegisterOf
+User --> UC_Creation
+User1 --> UC_issuance
+User1 --> UC_report
+User1 --> UC_search
+User1 --> UC_status
+User1 --> UC_notific
+User2 --> UC_RegisterOf
+User2 --> UC_Creation
+User2 --> UC_search
+UC_RegisterOf .. UC_data
+UC_Creation .. UC_data
+UC_issuance .. UC_data
+UC_search .. UC_data
+UC_status .. UC_data
+@enduml
