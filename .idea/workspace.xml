@@ -4,11 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1990973a-80f5-4824-8fd7-13cd1e5e9a49" name="Changes" comment="Изменение">
-      <change afterPath="$PROJECT_DIR$/Case/UseCase.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_27_10_2025_22_42__Changes_.xml" beforeDir="false" />
+    <list default="true" id="1990973a-80f5-4824-8fd7-13cd1e5e9a49" name="Changes" comment="Добавление UseCase.puml">
+      <change afterPath="$PROJECT_DIR$/Case/UseCase2.puml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Case/UseCase3.puml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Case/UseCase4.puml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lab3.1/Lab3.1.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,7 +108,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761594498697</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Добавление UseCase.puml">
+      <option name="closed" value="true" />
+      <created>1761599494879</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1761599494879</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -125,6 +133,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Изменен вывод" />
     <MESSAGE value="Изменение" />
-    <option name="LAST_COMMIT_MESSAGE" value="Изменение" />
+    <MESSAGE value="Добавление UseCase.puml" />
+    <option name="LAST_COMMIT_MESSAGE" value="Добавление UseCase.puml" />
   </component>
 </project>
