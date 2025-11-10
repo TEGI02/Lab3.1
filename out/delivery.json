@@ -1,0 +1,19 @@
+[
+  {
+    "delivery_id": 1,
+    "sender": "alex",
+    "admin": "admin1",
+    "recipient_name": "Иван Петров",
+    "status": "Создана",
+    "created_at": "2025-11-10 18:13:40",
+    "parcel": {
+      "weight_kg": 2.5,
+      "description": "Документы в конверте",
+      "parcel_type": "Документы"
+    },
+    "notification": {
+      "message": "Посылка создана и ожидает обработки",
+      "sent_at": "2025-11-10 18:13:40"
+    }
+  }
+]
