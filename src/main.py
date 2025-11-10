@@ -2,6 +2,7 @@ import os
 import sqlite3
 import json
 import csv
+import yaml
 import xml.etree.ElementTree as ET
 
 def main():
