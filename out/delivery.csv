@@ -1,2 +1,0 @@
-delivery_id,sender,admin,recipient_name,status,created_at,weight_kg,description,parcel_type,message,sent_at
-1,alex,admin1,Иван Петров,Создана,2025-11-10 18:13:40,2.5,Документы в конверте,Документы,Посылка создана и ожидает обработки,2025-11-10 18:13:40

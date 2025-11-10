@@ -1,2 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<deliveries><delivery><delivery_id>1</delivery_id><sender>alex</sender><admin>admin1</admin><recipient_name>Иван Петров</recipient_name><status>Создана</status><created_at>2025-11-10 18:13:40</created_at><parcel><weight_kg>2.5</weight_kg><description>Документы в конверте</description><parcel_type>Документы</parcel_type></parcel><notification><message>Посылка создана и ожидает обработки</message><sent_at>2025-11-10 18:13:40</sent_at></notification></delivery></deliveries>
