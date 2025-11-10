@@ -1,0 +1,2 @@
+<?xml version='1.0' encoding='utf-8'?>
+<students><student><id>1</id><name>Илья</name><age>19</age><Student>True</Student><address><city>Нижний Новгород</city><street>ул. Карла Маркса, 52</street></address></student><student><id>2</id><name>Миша</name><age>18</age><Student>False</Student><address><city>Нижний Новгород</city><street>ул. Карла Маркса, 12</street></address></student></students>
