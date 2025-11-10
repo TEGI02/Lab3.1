@@ -1,0 +1,67 @@
+@startuml
+
+!theme plain
+hide circle
+skinparam linetype ortho
+skinparam entity {
+  BackgroundColor White
+  BorderColor Black
+  FontName "Consolas"
+}
+
+entity "User" as User {
+  *user_id : INTEGER <<PK>>
+  --
+  username : TEXT
+  password : TEXT
+}
+
+entity "Administrator" as Administrator {
+  *admin_id : INTEGER <<PK>>
+  --
+  username : TEXT
+  password : TEXT
+}
+
+entity "Delivery" as Delivery {
+  *delivery_id : INTEGER <<PK>>
+  --
+  parcel_id : INTEGER <<PK>
+  user_id : INTEGER <<FK>>
+  admin_id : INTEGER <<FK>>
+  recipient_name : TEXT
+  status : TEXT
+  created_at : TEXT
+}
+
+entity "Parcel" as Parcel {
+  *parcel_id : INTEGER <<PK>>
+  --
+  weight_kg : REAL
+  description : TEXT
+  parcel_type : TEXT
+}
+
+entity "Notification" as Notification {
+  *notification_id : INTEGER <<PK>>
+  --
+  delivery_id : INTEGER <<FK>>
+  message : TEXT
+  sent_at : TEXT
+}
+
+' СВЯЗИ
+
+' 1:N — Один пользователь может создать несколько доставок
+User ||--o{ Delivery
+
+' 1:N — Один администратор может обработать несколько доставок
+Administrator ||--o{ Delivery
+
+' 1:1 — Каждая доставка содержит одну посылку
+Delivery ||--|| Parcel
+
+' 1:1 — Каждая доставка имеет одно уведомление
+Delivery ||--|| Notification
+
+@enduml
