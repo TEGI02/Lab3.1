@@ -5,12 +5,10 @@ import csv
 import xml.etree.ElementTree as ET
 
 def main():
-    #  Подключение к бд
     DB_NAME = "students.db"
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     
-    # Создание таблиц
     cursor.executescript("""
     DROP TABLE IF EXISTS address;
     DROP TABLE IF EXISTS student;
@@ -31,7 +29,6 @@ def main():
     );
     """)
     
-    # Добавление тестовых данных
     addresses = [
         ("Нижний Новгород", "ул. Карла Маркса, 52"),
         ("Нижний Новгород", "ул. Карла Маркса, 12"),
@@ -46,7 +43,6 @@ def main():
     
     conn.commit()
     
-    # Извлечение данных
     cursor.execute("""
     SELECT s.id, s.name, s.age, s.Student, a.city, a.street
     FROM student s
@@ -66,7 +62,6 @@ def main():
 
     os.makedirs("out", exist_ok=True)
     
-    # JSON
     with open("out/data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     
@@ -84,7 +79,6 @@ def main():
                 "street": d["address"]["street"]
             })
     
-    # XML
     root = ET.Element("students")
     for d in data:
         student_elem = ET.SubElement(root, "student")
@@ -97,7 +91,6 @@ def main():
     tree = ET.ElementTree(root)
     tree.write("out/data.xml", encoding="utf-8", xml_declaration=True)
     
-    # YAML 
     with open("out/data.yaml", "w", encoding="utf-8") as f:
         yaml.dump(data, f, allow_unicode=True, sort_keys=False)
 
