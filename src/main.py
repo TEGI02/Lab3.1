@@ -2,97 +2,163 @@ import os
 import sqlite3
 import json
 import csv
-import yaml
 import xml.etree.ElementTree as ET
 
 def main():
-    DB_NAME = "students.db"
+    DB_NAME = "delivery.db"
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    
+
     cursor.executescript("""
-    DROP TABLE IF EXISTS address;
-    DROP TABLE IF EXISTS student;
-    
-    CREATE TABLE address (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        city TEXT NOT NULL,
-        street TEXT NOT NULL
+    DROP TABLE IF EXISTS Notification;
+    DROP TABLE IF EXISTS Delivery;
+    DROP TABLE IF EXISTS Parcel;
+    DROP TABLE IF EXISTS Administrator;
+    DROP TABLE IF EXISTS User;
+
+    CREATE TABLE User (
+        user_id INTEGER PRIMARY KEY,
+        username TEXT,
+        password TEXT
     );
-    
-    CREATE TABLE student (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        age INTEGER NOT NULL,
-        Student BOOLEAN NOT NULL,
-        address_id INTEGER,
-        FOREIGN KEY(address_id) REFERENCES address(id)
+
+    CREATE TABLE Administrator (
+        admin_id INTEGER PRIMARY KEY,
+        username TEXT,
+        password TEXT
+    );
+
+    CREATE TABLE Parcel (
+        parcel_id INTEGER PRIMARY KEY,
+        weight_kg REAL,
+        description TEXT,
+        parcel_type TEXT
+    );
+
+    CREATE TABLE Delivery (
+        parcel_id INTEGER PRIMARY KEY,
+        user_id INTEGER,
+        admin_id INTEGER,
+        recipient_name TEXT,
+        status TEXT,
+        created_at TEXT,
+        FOREIGN KEY(user_id) REFERENCES User(user_id),
+        FOREIGN KEY(admin_id) REFERENCES Administrator(admin_id)
+    );
+
+    CREATE TABLE Notification (
+        notification_id INTEGER PRIMARY KEY,
+        delivery_id INTEGER,
+        message TEXT,
+        sent_at TEXT,
+        FOREIGN KEY(delivery_id) REFERENCES Delivery(parcel_id)
     );
     """)
-    
-    addresses = [
-        ("Нижний Новгород", "ул. Карла Маркса, 52"),
-        ("Нижний Новгород", "ул. Карла Маркса, 12"),
+
+    users = [
+        (1, "ivan", "pass123"),
+        (2, "olga", "secure456")
     ]
-    cursor.executemany("INSERT INTO address (city, street) VALUES (?, ?)", addresses)
-    
-    students = [
-        ("Илья", 19, True, 1),
-        ("Миша", 18, False, 2),
+    admins = [
+        (1, "admin1", "adminpass"),
+        (2, "admin2", "adminsecure")
     ]
-    cursor.executemany("INSERT INTO student (name, age, Student, address_id) VALUES (?, ?, ?, ?)", students)
-    
+    parcels = [
+        (1, 2.5, "Books", "Standard"),
+        (2, 1.2, "Electronics", "Express")
+    ]
+    deliveries = [
+        (1, 1, 1, "Sergey Petrov", "In Transit", "2025-11-10"),
+        (2, 2, 2, "Anna Ivanova", "Delivered", "2025-11-09")
+    ]
+    notifications = [
+        (1, 1, "Your parcel is on the way", "2025-11-10 10:00"),
+        (2, 2, "Your parcel has been delivered", "2025-11-09 15:30")
+    ]
+
+    cursor.executemany("INSERT INTO User VALUES (?, ?, ?)", users)
+    cursor.executemany("INSERT INTO Administrator VALUES (?, ?, ?)", admins)
+    cursor.executemany("INSERT INTO Parcel VALUES (?, ?, ?, ?)", parcels)
+    cursor.executemany("INSERT INTO Delivery VALUES (?, ?, ?, ?, ?, ?)", deliveries)
+    cursor.executemany("INSERT INTO Notification VALUES (?, ?, ?, ?)", notifications)
+
     conn.commit()
-    
+
     cursor.execute("""
-    SELECT s.id, s.name, s.age, s.Student, a.city, a.street
-    FROM student s
-    LEFT JOIN address a ON s.address_id = a.id
+    SELECT d.parcel_id, u.username, a.username, d.recipient_name, d.status, d.created_at,
+           p.weight_kg, p.description, p.parcel_type,
+           n.message, n.sent_at
+    FROM Delivery d
+    JOIN User u ON d.user_id = u.user_id
+    JOIN Administrator a ON d.admin_id = a.admin_id
+    JOIN Parcel p ON d.parcel_id = p.parcel_id
+    LEFT JOIN Notification n ON d.parcel_id = n.delivery_id
     """)
     rows = cursor.fetchall()
-    
+
     data = []
     for row in rows:
         data.append({
-            "id": row[0],
-            "name": row[1],
-            "age": row[2],
-            "Student": bool(row[3]),
-            "address": {"city": row[4], "street": row[5]}
+            "parcel_id": row[0],
+            "user": row[1],
+            "admin": row[2],
+            "recipient_name": row[3],
+            "status": row[4],
+            "created_at": row[5],
+            "parcel": {
+                "weight_kg": row[6],
+                "description": row[7],
+                "parcel_type": row[8]
+            },
+            "notification": {
+                "message": row[9],
+                "sent_at": row[10]
+            } if row[9] else None
         })
 
     os.makedirs("out", exist_ok=True)
-    
-    with open("out/data.json", "w", encoding="utf-8") as f:
+
+    with open("out/delivery.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-    
-    #  CSV
-    with open("out/data.csv", "w", newline='', encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=["id", "name", "age", "Student", "city", "street"])
+
+    with open("out/delivery.csv", "w", newline='', encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=[
+            "parcel_id", "user", "admin", "recipient_name", "status", "created_at",
+            "weight_kg", "description", "parcel_type", "message", "sent_at"
+        ])
         writer.writeheader()
         for d in data:
             writer.writerow({
-                "id": d["id"],
-                "name": d["name"],
-                "age": d["age"],
-                "Student": d["Student"],
-                "city": d["address"]["city"],
-                "street": d["address"]["street"]
+                "parcel_id": d["parcel_id"],
+                "user": d["user"],
+                "admin": d["admin"],
+                "recipient_name": d["recipient_name"],
+                "status": d["status"],
+                "created_at": d["created_at"],
+                "weight_kg": d["parcel"]["weight_kg"],
+                "description": d["parcel"]["description"],
+                "parcel_type": d["parcel"]["parcel_type"],
+                "message": d["notification"]["message"] if d["notification"] else "",
+                "sent_at": d["notification"]["sent_at"] if d["notification"] else ""
             })
-    
-    root = ET.Element("students")
+
+    root = ET.Element("deliveries")
     for d in data:
-        student_elem = ET.SubElement(root, "student")
-        for key in ["id", "name", "age", "Student"]:
-            ET.SubElement(student_elem, key).text = str(d[key])
-        addr_elem = ET.SubElement(student_elem, "address")
-        ET.SubElement(addr_elem, "city").text = d["address"]["city"]
-        ET.SubElement(addr_elem, "street").text = d["address"]["street"]
-    
+        delivery_elem = ET.SubElement(root, "delivery")
+        for key in ["parcel_id", "user", "admin", "recipient_name", "status", "created_at"]:
+            ET.SubElement(delivery_elem, key).text = str(d[key])
+        parcel_elem = ET.SubElement(delivery_elem, "parcel")
+        for k, v in d["parcel"].items():
+            ET.SubElement(parcel_elem, k).text = str(v)
+        if d["notification"]:
+            notif_elem = ET.SubElement(delivery_elem, "notification")
+            ET.SubElement(notif_elem, "message").text = d["notification"]["message"]
+            ET.SubElement(notif_elem, "sent_at").text = d["notification"]["sent_at"]
+
     tree = ET.ElementTree(root)
-    tree.write("out/data.xml", encoding="utf-8", xml_declaration=True)
-    
-    with open("out/data.yaml", "w", encoding="utf-8") as f:
+    tree.write("out/delivery.xml", encoding="utf-8", xml_declaration=True)
+
+    with open("out/delivery.yaml", "w", encoding="utf-8") as f:
         yaml.dump(data, f, allow_unicode=True, sort_keys=False)
 
 if __name__ == "__main__":
