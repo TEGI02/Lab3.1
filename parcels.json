@@ -1,0 +1,46 @@
+[
+    {
+        "parcel_id": 1,
+        "user": "ivan",
+        "admin": "admin1",
+        "recipient": "Sergey Petrov",
+        "status": "In Transit",
+        "created_at": "2025-11-10",
+        "weight_kg": 2.5,
+        "description": "Books",
+        "parcel_type": "Standard"
+    },
+    {
+        "parcel_id": 2,
+        "user": "olga",
+        "admin": "admin2",
+        "recipient": "Anna Ivanova",
+        "status": "Delivered",
+        "created_at": "2025-11-09",
+        "weight_kg": 1.2,
+        "description": "Electronics",
+        "parcel_type": "Express"
+    },
+    {
+        "parcel_id": 123,
+        "user": "ivan",
+        "admin": "admin1",
+        "recipient": "ilya",
+        "status": "In Transit",
+        "created_at": "25.11.2025",
+        "weight_kg": 23.0,
+        "description": "books",
+        "parcel_type": "Standard"
+    },
+    {
+        "parcel_id": 1234,
+        "user": "ivan",
+        "admin": "admin1",
+        "recipient": "ilya",
+        "status": "in transit ",
+        "created_at": "25.11.2025",
+        "weight_kg": 24.0,
+        "description": "носки ",
+        "parcel_type": "standart"
+    }
+]
