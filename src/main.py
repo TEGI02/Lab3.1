@@ -45,14 +45,13 @@ def init_db(cursor):
     );
     """)
 
-    # Добавляем тестовые данные только один раз
     cursor.execute("SELECT COUNT(*) FROM User")
     if cursor.fetchone()[0] == 0:
         users = [
             (1, "ivan", "pass123"),
             (2, "olga", "secure456")
         ]
-        admins = [
+        admin = [
             (1, "admin1", "adminpass"),
             (2, "admin2", "adminsecure")
         ]
@@ -78,50 +77,39 @@ def init_db(cursor):
 
 def login(cursor):
     print("=== Авторизация ===")
-    username = input("Введите имя пользователя: ")
+    username = input("Введите имя пользователя/администратора: ")
     password = input("Введите пароль: ")
 
     cursor.execute("SELECT * FROM User WHERE username=? AND password=?", (username, password))
     user = cursor.fetchone()
     if user:
-        print(f"Добро пожаловать, {username}!")
-        return user[0]  # user_id
-    else:
-        print("Неверное имя пользователя или пароль.")
-        return None
+        print(f"Добро пожаловать, пользователь {username}!")
+        return ("user", user[0])
+
+    cursor.execute("SELECT * FROM Administrator WHERE username=? AND password=?", (username, password))
+    admin = cursor.fetchone()
+    if admin:
+        print(f"Добро пожаловать, администратор {username}!")
+        return ("admin", admin[0])
+
+    print("Неверное имя пользователя или пароль.")
+    return None
 
 
 def search_parcel(cursor):
     print("\n=== Поиск посылки ===")
-    choice = input("Искать по (1) ID посылки или (2) имени получателя? ")
-
-    if choice == "1":
-        parcel_id = input("Введите ID посылки: ")
-        cursor.execute("""
-        SELECT d.parcel_id, u.username, a.username, d.recipient_name, d.status, d.created_at,
-               p.weight_kg, p.description, p.parcel_type,
-               n.message, n.sent_at
-        FROM Delivery d
-        JOIN User u ON d.user_id = u.user_id
-        JOIN Administrator a ON d.admin_id = a.admin_id
-        JOIN Parcel p ON d.parcel_id = p.parcel_id
-        LEFT JOIN Notification n ON d.parcel_id = n.delivery_id
-        WHERE d.parcel_id=?
-        """, (parcel_id,))
-    else:
-        recipient = input("Введите имя получателя: ")
-        cursor.execute("""
-        SELECT d.parcel_id, u.username, a.username, d.recipient_name, d.status, d.created_at,
-               p.weight_kg, p.description, p.parcel_type,
-               n.message, n.sent_at
-        FROM Delivery d
-        JOIN User u ON d.user_id = u.user_id
-        JOIN Administrator a ON d.admin_id = a.admin_id
-        JOIN Parcel p ON d.parcel_id = p.parcel_id
-        LEFT JOIN Notification n ON d.parcel_id = n.delivery_id
-        WHERE d.recipient_name LIKE ?
-        """, (f"%{recipient}%",))
-
+    parcel_id = input("Введите ID посылки: ")
+    cursor.execute("""
+    SELECT d.parcel_id, u.username, a.username, d.recipient_name, d.status, d.created_at,
+           p.weight_kg, p.description, p.parcel_type,
+           n.message, n.sent_at
+    FROM Delivery d
+    JOIN User u ON d.user_id = u.user_id
+    JOIN Administrator a ON d.admin_id = a.admin_id
+    JOIN Parcel p ON d.parcel_id = p.parcel_id
+    LEFT JOIN Notification n ON d.parcel_id = n.delivery_id
+    WHERE d.parcel_id=?
+    """, (parcel_id,))
     row = cursor.fetchone()
     if row:
         print("\n--- Информация о посылке ---")
@@ -214,11 +202,18 @@ def add_parcel(cursor, conn, user_id):
 
     conn.commit()
     print("Посылка успешно добавлена и сохранена в базе.")
-
-    # Экспортируем данные во все форматы
     export_data(cursor)
-    print("Данные обновлены в файлах: delivery.db, parcels.csv, parcels.json, parcels.xml, parcels.yaml")
 
+
+def update_status(cursor, conn):
+    print("\n=== Изменение статуса посылки (админ) ===")
+    parcel_id = input("Введите ID посылки: ")
+    new_status = input("Введите новый статус: ")
+
+    cursor.execute("UPDATE Delivery SET status=? WHERE parcel_id=?", (new_status, parcel_id))
+    conn.commit()
+    print("Статус успешно обновлён.")
+    export_data(cursor)
 
 def main():
     DB_NAME = "delivery.db"
@@ -228,19 +223,26 @@ def main():
     init_db(cursor)
     conn.commit()
 
-    user_id = login(cursor)
-    if user_id:
+    login_result = login(cursor)
+    if login_result:
+        role, user_id = login_result
         while True:
             print("\nВыберите действие:")
             print("1 — Поиск посылки")
-            print("2 — Добавить новую посылку")
+            if role == "user":
+                print("2 — Добавить новую посылку")
+            if role == "admin":
+                print("2 — Изменить статус посылки")
             print("0 — Выход")
+
             action = input("Ваш выбор: ")
 
             if action == "1":
                 search_parcel(cursor)
-            elif action == "2":
+            elif action == "2" and role == "user":
                 add_parcel(cursor, conn, user_id)
+            elif action == "2" and role == "admin":
+                update_status(cursor, conn)
             elif action == "0":
                 break
             else:
