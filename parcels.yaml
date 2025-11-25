@@ -20,7 +20,7 @@
   user: ivan
   admin: admin1
   recipient: ilya
-  status: доставлено
+  status: 'доставленно '
   created_at: 25.11.2025
   weight_kg: 23.0
   description: books

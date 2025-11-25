@@ -1,5 +1,5 @@
 parcel_id,user,admin,recipient,status,created_at,weight_kg,description,parcel_type
 1,ivan,admin1,Sergey Petrov,In Transit,2025-11-10,2.5,Books,Standard
 2,olga,admin2,Anna Ivanova,Delivered,2025-11-09,1.2,Electronics,Express
-123,ivan,admin1,ilya,доставлено,25.11.2025,23.0,books,Standard
+123,ivan,admin1,ilya,доставленно ,25.11.2025,23.0,books,Standard
 1234,ivan,admin1,ilya,in transit ,25.11.2025,24.0,носки ,standart

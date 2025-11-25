@@ -69,7 +69,7 @@ def init_db(cursor):
         ]
 
         cursor.executemany("INSERT INTO User VALUES (?, ?, ?)", users)
-        cursor.executemany("INSERT INTO Administrator VALUES (?, ?, ?)", admins)
+        cursor.executemany("INSERT INTO Administrator VALUES (?, ?, ?)", admin)
         cursor.executemany("INSERT INTO Parcel VALUES (?, ?, ?, ?)", parcels)
         cursor.executemany("INSERT INTO Delivery VALUES (?, ?, ?, ?, ?, ?)", deliveries)
         cursor.executemany("INSERT INTO Notification VALUES (?, ?, ?, ?)", notifications)
@@ -214,6 +214,9 @@ def update_status(cursor, conn):
     conn.commit()
     print("Статус успешно обновлён.")
     export_data(cursor)
+def clear_screen():
+    # Очистка терминала для Windows и Unix-подобных систем
+    os.system("cls" if os.name == "nt" else "clear")
 
 def main():
     DB_NAME = "delivery.db"
@@ -238,18 +241,20 @@ def main():
             action = input("Ваш выбор: ")
 
             if action == "1":
+                clear_screen()
                 search_parcel(cursor)
             elif action == "2" and role == "user":
+                clear_screen()
                 add_parcel(cursor, conn, user_id)
             elif action == "2" and role == "admin":
+                clear_screen()
                 update_status(cursor, conn)
             elif action == "0":
                 break
             else:
+                clear_screen()
                 print("Неверный выбор. Попробуйте снова.")
 
     conn.close()
-
-
 if __name__ == "__main__":
     main()
