@@ -62,16 +62,11 @@ def init_db(cursor):
             (1, 1, 1, "Sergey Petrov", "In Transit", "2025-11-10"),
             (2, 2, 2, "Anna Ivanova", "Delivered", "2025-11-09")
         ]
-        notifications = [
-            (1, 1, "Your parcel is on the way", "2025-11-10 10:00"),
-            (2, 2, "Your parcel has been delivered", "2025-11-09 15:30")
-        ]
 
         cursor.executemany("INSERT INTO User VALUES (?, ?, ?)", users)
         cursor.executemany("INSERT INTO Administrator VALUES (?, ?, ?)", admins)
         cursor.executemany("INSERT INTO Parcel VALUES (?, ?, ?, ?)", parcels)
         cursor.executemany("INSERT INTO Delivery VALUES (?, ?, ?, ?, ?, ?)", deliveries)
-        cursor.executemany("INSERT INTO Notification VALUES (?, ?, ?, ?)", notifications)
 
 # ---------------- Экспорт ----------------
 def export_users(cursor):
