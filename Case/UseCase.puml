@@ -3,12 +3,14 @@ skinparam packageStyle rectangle
 actor "Администратор2" as User1
 package "Система посылок" {
     usecase "Регистрация посылок" as UC_RegisterOf
+
     usecase "Выдача посылок" as UC_issuance
     usecase "Архивирование записей о доставке" as UC_report
     usecase "поиск посылок" as UC_search
     usecase "изменение статуса посылки с отображением в бд" as UC_status
-    usecase "Авторизация" as UC_Register
+    usecase "Авторизация/регистрация" as UC_Register
     usecase "Авторизация" as UC_Register2
+    usecase "Удаление посылок и пользователей" as UC_delit
 }
 actor "Пользователь" as User2
 User1 -- UC_Register2
@@ -16,6 +18,7 @@ UC_Register2 -- UC_issuance
 UC_Register2 -- UC_report
 UC_Register2 -- UC_search
 UC_Register2 -- UC_status
+UC_Register2 -- UC_delit
 User2 -- UC_Register
 UC_Register -- UC_search
 UC_Register -- UC_RegisterOf
