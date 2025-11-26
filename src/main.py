@@ -43,7 +43,7 @@ def init_db(cursor):
     );
     """)
 
-    # Начальные данные (однократно при пустой таблице пользователей)
+    # Начальные данные 
     cursor.execute("SELECT COUNT(*) FROM User")
     if cursor.fetchone()[0] == 0:
         users = [
@@ -274,7 +274,7 @@ def delete_user(cursor, conn):
         if confirm.lower() != "y":
             print("Отмена удаления.")
             return
-        # Удаляем связанные доставки и уведомления
+        # Удаляем доставки и уведомления
         cursor.execute("SELECT parcel_id FROM Delivery WHERE user_id=?", (user_id,))
         parcel_ids = [row[0] for row in cursor.fetchall()]
         for pid in parcel_ids:
@@ -298,7 +298,7 @@ def delete_parcel(cursor, conn):
         print(f"Ошибка: посылка с ID {parcel_id} не существует.")
         return
 
-    # Удаление каскадно: уведомления -> доставка -> посылка
+    # Удаление 
     cursor.execute("DELETE FROM Notification WHERE delivery_id=?", (parcel_id,))
     cursor.execute("DELETE FROM Delivery WHERE parcel_id=?", (parcel_id,))
     cursor.execute("DELETE FROM Parcel WHERE parcel_id=?", (parcel_id,))
