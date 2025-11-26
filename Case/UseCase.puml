@@ -1,6 +1,6 @@
 @startuml
 skinparam packageStyle rectangle
-actor "Администратор2" as User1
+actor "Администратор" as User1
 package "Система посылок" {
     usecase "Регистрация посылок" as UC_RegisterOf
 
