@@ -34,13 +34,6 @@ def init_db(cursor):
         FOREIGN KEY(user_id) REFERENCES User(user_id),
         FOREIGN KEY(admin_id) REFERENCES Administrator(admin_id)
     );
-    CREATE TABLE IF NOT EXISTS Notification (
-        notification_id INTEGER PRIMARY KEY,
-        delivery_id INTEGER,
-        message TEXT,
-        sent_at TEXT,
-        FOREIGN KEY(delivery_id) REFERENCES Delivery(parcel_id)
-    );
     """)
 
     # Начальные данные 
