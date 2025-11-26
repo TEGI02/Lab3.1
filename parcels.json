@@ -22,6 +22,17 @@
         "parcel_type": "Express"
     },
     {
+        "parcel_id": 52,
+        "user": "new",
+        "admin": "admin1",
+        "recipient": "ilya",
+        "status": "in transit",
+        "created_at": "12.05.2015",
+        "weight_kg": 34.0,
+        "description": "книги",
+        "parcel_type": "standart"
+    },
+    {
         "parcel_id": 123,
         "user": "ivan",
         "admin": "admin1",
