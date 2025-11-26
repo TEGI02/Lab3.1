@@ -1,0 +1,231 @@
+Index: src/main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import os\r\nimport sqlite3\r\nimport json\r\nimport csv\r\nimport yaml\r\nimport xml.etree.ElementTree as ET\r\n\r\ndef main():\r\n    DB_NAME = \"delivery.db\"\r\n    conn = sqlite3.connect(DB_NAME)\r\n    cursor = conn.cursor()\r\n\r\n    # Создание таблиц\r\n    cursor.executescript(\"\"\"\r\n    DROP TABLE IF EXISTS Notification;\r\n    DROP TABLE IF EXISTS Delivery;\r\n    DROP TABLE IF EXISTS Parcel;\r\n    DROP TABLE IF EXISTS Administrator;\r\n    DROP TABLE IF EXISTS User;\r\n\r\n    CREATE TABLE User (\r\n        user_id INTEGER PRIMARY KEY AUTOINCREMENT,\r\n        username TEXT NOT NULL,\r\n        password TEXT NOT NULL\r\n    );\r\n\r\n    CREATE TABLE Administrator (\r\n        admin_id INTEGER PRIMARY KEY AUTOINCREMENT,\r\n        username TEXT NOT NULL,\r\n        password TEXT NOT NULL\r\n    );\r\n\r\n    CREATE TABLE Parcel (\r\n        parcel_id INTEGER PRIMARY KEY AUTOINCREMENT,\r\n        weight_kg REAL,\r\n        description TEXT,\r\n        parcel_type TEXT\r\n    );\r\n\r\n    CREATE TABLE Delivery (\r\n        delivery_id INTEGER PRIMARY KEY AUTOINCREMENT,\r\n        parcel_id INTEGER NOT NULL,\r\n        user_id INTEGER NOT NULL,\r\n        admin_id INTEGER NOT NULL,\r\n        recipient_name TEXT NOT NULL,\r\n        status TEXT NOT NULL,\r\n        created_at TEXT DEFAULT CURRENT_TIMESTAMP,\r\n        FOREIGN KEY(parcel_id) REFERENCES Parcel(parcel_id),\r\n        FOREIGN KEY(user_id) REFERENCES User(user_id),\r\n        FOREIGN KEY(admin_id) REFERENCES Administrator(admin_id)\r\n    );\r\n\r\n    CREATE TABLE Notification (\r\n        notification_id INTEGER PRIMARY KEY AUTOINCREMENT,\r\n        delivery_id INTEGER UNIQUE NOT NULL,\r\n        message TEXT,\r\n        sent_at TEXT DEFAULT CURRENT_TIMESTAMP,\r\n        FOREIGN KEY(delivery_id) REFERENCES Delivery(delivery_id)\r\n    );\r\n    \"\"\")\r\n\r\n    # Тестовые данные\r\n    cursor.execute(\"INSERT INTO User (username, password) VALUES ('alex', 'pass123')\")\r\n    cursor.execute(\"INSERT INTO Administrator (username, password) VALUES ('admin1', 'adminpass')\")\r\n    cursor.execute(\"INSERT INTO Parcel (weight_kg, description, parcel_type) VALUES (2.5, 'Документы в конверте', 'Документы')\")\r\n    cursor.execute(\"\"\"\r\n        INSERT INTO Delivery (parcel_id, user_id, admin_id, recipient_name, status)\r\n        VALUES (1, 1, 1, 'Иван Петров', 'Создана')\r\n    \"\"\")\r\n    cursor.execute(\"\"\"\r\n        INSERT INTO Notification (delivery_id, message)\r\n        VALUES (1, 'Посылка создана и ожидает обработки')\r\n    \"\"\")\r\n\r\n    conn.commit()\r\n\r\n    # Извлечение данных\r\n    cursor.execute(\"\"\"\r\n    SELECT d.delivery_id, u.username, a.username, d.recipient_name, d.status, d.created_at,\r\n           p.weight_kg, p.description, p.parcel_type,\r\n           n.message, n.sent_at\r\n    FROM Delivery d\r\n    JOIN User u ON d.user_id = u.user_id\r\n    JOIN Administrator a ON d.admin_id = a.admin_id\r\n    JOIN Parcel p ON d.parcel_id = p.parcel_id\r\n    JOIN Notification n ON d.delivery_id = n.delivery_id\r\n    \"\"\")\r\n    rows = cursor.fetchall()\r\n\r\n    deliveries = []\r\n    for row in rows:\r\n        deliveries.append({\r\n            \"delivery_id\": row[0],\r\n            \"sender\": row[1],\r\n            \"admin\": row[2],\r\n            \"recipient_name\": row[3],\r\n            \"status\": row[4],\r\n            \"created_at\": row[5],\r\n            \"parcel\": {\r\n                \"weight_kg\": row[6],\r\n                \"description\": row[7],\r\n                \"parcel_type\": row[8]\r\n            },\r\n            \"notification\": {\r\n                \"message\": row[9],\r\n                \"sent_at\": row[10]\r\n            }\r\n        })\r\n\r\n    os.makedirs(\"out\", exist_ok=True)\r\n\r\n    # JSON\r\n    with open(\"out/delivery.json\", \"w\", encoding=\"utf-8\") as f:\r\n        json.dump(deliveries, f, ensure_ascii=False, indent=2)\r\n\r\n    # CSV\r\n    with open(\"out/delivery.csv\", \"w\", newline='', encoding=\"utf-8\") as f:\r\n        writer = csv.DictWriter(f, fieldnames=[\r\n            \"delivery_id\", \"sender\", \"admin\", \"recipient_name\", \"status\", \"created_at\",\r\n            \"weight_kg\", \"description\", \"parcel_type\", \"message\", \"sent_at\"\r\n        ])\r\n        writer.writeheader()\r\n        for d in deliveries:\r\n            writer.writerow({\r\n                \"delivery_id\": d[\"delivery_id\"],\r\n                \"sender\": d[\"sender\"],\r\n                \"admin\": d[\"admin\"],\r\n                \"recipient_name\": d[\"recipient_name\"],\r\n                \"status\": d[\"status\"],\r\n                \"created_at\": d[\"created_at\"],\r\n                \"weight_kg\": d[\"parcel\"][\"weight_kg\"],\r\n                \"description\": d[\"parcel\"][\"description\"],\r\n                \"parcel_type\": d[\"parcel\"][\"parcel_type\"],\r\n                \"message\": d[\"notification\"][\"message\"],\r\n                \"sent_at\": d[\"notification\"][\"sent_at\"]\r\n            })\r\n\r\n    # XML\r\n    root = ET.Element(\"deliveries\")\r\n    for d in deliveries:\r\n        delivery_elem = ET.SubElement(root, \"delivery\")\r\n        for key in [\"delivery_id\", \"sender\", \"admin\", \"recipient_name\", \"status\", \"created_at\"]:\r\n            ET.SubElement(delivery_elem, key).text = str(d[key])\r\n        parcel_elem = ET.SubElement(delivery_elem, \"parcel\")\r\n        for k, v in d[\"parcel\"].items():\r\n            ET.SubElement(parcel_elem, k).text = str(v)\r\n        notif_elem = ET.SubElement(delivery_elem, \"notification\")\r\n        for k, v in d[\"notification\"].items():\r\n            ET.SubElement(notif_elem, k).text = str(v)\r\n\r\n    tree = ET.ElementTree(root)\r\n    tree.write(\"out/delivery.xml\", encoding=\"utf-8\", xml_declaration=True)\r\n\r\n    # YAML\r\n    with open(\"out/delivery.yaml\", \"w\", encoding=\"utf-8\") as f:\r\n        yaml.dump(deliveries, f, allow_unicode=True, sort_keys=False)\r\n\r\nif __name__ == \"__main__\":\r\n    main()
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main.py b/src/main.py
+--- a/src/main.py	(revision 6e5ca535c9aa14ce2dabb374a5dc6a57cdd919a9)
++++ b/src/main.py	(date 1762796470078)
+@@ -6,154 +6,103 @@
+ import xml.etree.ElementTree as ET
+ 
+ def main():
+-    DB_NAME = "delivery.db"
++    #  Подключение к бд
++    DB_NAME = "students.db"
+     conn = sqlite3.connect(DB_NAME)
+     cursor = conn.cursor()
+ 
+     # Создание таблиц
+     cursor.executescript("""
+-    DROP TABLE IF EXISTS Notification;
+-    DROP TABLE IF EXISTS Delivery;
+-    DROP TABLE IF EXISTS Parcel;
+-    DROP TABLE IF EXISTS Administrator;
+-    DROP TABLE IF EXISTS User;
+-
+-    CREATE TABLE User (
+-        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+-        username TEXT NOT NULL,
+-        password TEXT NOT NULL
+-    );
+-
+-    CREATE TABLE Administrator (
+-        admin_id INTEGER PRIMARY KEY AUTOINCREMENT,
+-        username TEXT NOT NULL,
+-        password TEXT NOT NULL
+-    );
+-
+-    CREATE TABLE Parcel (
+-        parcel_id INTEGER PRIMARY KEY AUTOINCREMENT,
+-        weight_kg REAL,
+-        description TEXT,
+-        parcel_type TEXT
++    DROP TABLE IF EXISTS address;
++    DROP TABLE IF EXISTS student;
++    
++    CREATE TABLE address (
++        id INTEGER PRIMARY KEY AUTOINCREMENT,
++        city TEXT NOT NULL,
++        street TEXT NOT NULL
+     );
+-
+-    CREATE TABLE Delivery (
+-        delivery_id INTEGER PRIMARY KEY AUTOINCREMENT,
+-        parcel_id INTEGER NOT NULL,
+-        user_id INTEGER NOT NULL,
+-        admin_id INTEGER NOT NULL,
+-        recipient_name TEXT NOT NULL,
+-        status TEXT NOT NULL,
+-        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+-        FOREIGN KEY(parcel_id) REFERENCES Parcel(parcel_id),
+-        FOREIGN KEY(user_id) REFERENCES User(user_id),
+-        FOREIGN KEY(admin_id) REFERENCES Administrator(admin_id)
++    
++    CREATE TABLE student (
++        id INTEGER PRIMARY KEY AUTOINCREMENT,
++        name TEXT NOT NULL,
++        age INTEGER NOT NULL,
++        isStudent BOOLEAN NOT NULL,
++        address_id INTEGER,
++        FOREIGN KEY(address_id) REFERENCES address(id)
+     );
+-
+-    CREATE TABLE Notification (
+-        notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
+-        delivery_id INTEGER UNIQUE NOT NULL,
+-        message TEXT,
+-        sent_at TEXT DEFAULT CURRENT_TIMESTAMP,
+-        FOREIGN KEY(delivery_id) REFERENCES Delivery(delivery_id)
+-    );
+-    """)
+-
+-    # Тестовые данные
+-    cursor.execute("INSERT INTO User (username, password) VALUES ('alex', 'pass123')")
+-    cursor.execute("INSERT INTO Administrator (username, password) VALUES ('admin1', 'adminpass')")
+-    cursor.execute("INSERT INTO Parcel (weight_kg, description, parcel_type) VALUES (2.5, 'Документы в конверте', 'Документы')")
+-    cursor.execute("""
+-        INSERT INTO Delivery (parcel_id, user_id, admin_id, recipient_name, status)
+-        VALUES (1, 1, 1, 'Иван Петров', 'Создана')
+-    """)
+-    cursor.execute("""
+-        INSERT INTO Notification (delivery_id, message)
+-        VALUES (1, 'Посылка создана и ожидает обработки')
+     """)
+ 
++    # Добавление тестовых данных
++    addresses = [
++        ("Нижегородская область, Сеченово", "ул. Советская, 26"),
++        ("Городец", "ул. Якова Петрова, 12"),
++        ("Киров", "Ленинский район, ул. Блюхера, 63"),
++    ]
++    cursor.executemany("INSERT INTO address (city, street) VALUES (?, ?)", addresses)
++
++    students = [
++        ("Александр", 18, True, 1),
++        ("Данил", 18, True, 2),
++        ("Дмитрий", 18, True, 3)
++    ]
++    cursor.executemany("INSERT INTO student (name, age, isStudent, address_id) VALUES (?, ?, ?, ?)", students)
++
+     conn.commit()
+ 
+     # Извлечение данных
+     cursor.execute("""
+-    SELECT d.delivery_id, u.username, a.username, d.recipient_name, d.status, d.created_at,
+-           p.weight_kg, p.description, p.parcel_type,
+-           n.message, n.sent_at
+-    FROM Delivery d
+-    JOIN User u ON d.user_id = u.user_id
+-    JOIN Administrator a ON d.admin_id = a.admin_id
+-    JOIN Parcel p ON d.parcel_id = p.parcel_id
+-    JOIN Notification n ON d.delivery_id = n.delivery_id
++    SELECT s.id, s.name, s.age, s.isStudent, a.city, a.street
++    FROM student s
++    LEFT JOIN address a ON s.address_id = a.id
+     """)
+     rows = cursor.fetchall()
+ 
+-    deliveries = []
++    data = []
+     for row in rows:
+-        deliveries.append({
+-            "delivery_id": row[0],
+-            "sender": row[1],
+-            "admin": row[2],
+-            "recipient_name": row[3],
+-            "status": row[4],
+-            "created_at": row[5],
+-            "parcel": {
+-                "weight_kg": row[6],
+-                "description": row[7],
+-                "parcel_type": row[8]
+-            },
+-            "notification": {
+-                "message": row[9],
+-                "sent_at": row[10]
+-            }
++        data.append({
++            "id": row[0],
++            "name": row[1],
++            "age": row[2],
++            "isStudent": bool(row[3]),
++            "address": {"city": row[4], "street": row[5]}
+         })
+ 
+     os.makedirs("out", exist_ok=True)
+ 
+     # JSON
+-    with open("out/delivery.json", "w", encoding="utf-8") as f:
+-        json.dump(deliveries, f, ensure_ascii=False, indent=2)
++    with open("out/data.json", "w", encoding="utf-8") as f:
++        json.dump(data, f, ensure_ascii=False, indent=2)
+ 
+-    # CSV
+-    with open("out/delivery.csv", "w", newline='', encoding="utf-8") as f:
+-        writer = csv.DictWriter(f, fieldnames=[
+-            "delivery_id", "sender", "admin", "recipient_name", "status", "created_at",
+-            "weight_kg", "description", "parcel_type", "message", "sent_at"
+-        ])
++    #  CSV
++    with open("out/data.csv", "w", newline='', encoding="utf-8") as f:
++        writer = csv.DictWriter(f, fieldnames=["id", "name", "age", "isStudent", "city", "street"])
+         writer.writeheader()
+-        for d in deliveries:
++        for d in data:
+             writer.writerow({
+-                "delivery_id": d["delivery_id"],
+-                "sender": d["sender"],
+-                "admin": d["admin"],
+-                "recipient_name": d["recipient_name"],
+-                "status": d["status"],
+-                "created_at": d["created_at"],
+-                "weight_kg": d["parcel"]["weight_kg"],
+-                "description": d["parcel"]["description"],
+-                "parcel_type": d["parcel"]["parcel_type"],
+-                "message": d["notification"]["message"],
+-                "sent_at": d["notification"]["sent_at"]
++                "id": d["id"],
++                "name": d["name"],
++                "age": d["age"],
++                "isStudent": d["isStudent"],
++                "city": d["address"]["city"],
++                "street": d["address"]["street"]
+             })
+ 
+     # XML
+-    root = ET.Element("deliveries")
+-    for d in deliveries:
+-        delivery_elem = ET.SubElement(root, "delivery")
+-        for key in ["delivery_id", "sender", "admin", "recipient_name", "status", "created_at"]:
+-            ET.SubElement(delivery_elem, key).text = str(d[key])
+-        parcel_elem = ET.SubElement(delivery_elem, "parcel")
+-        for k, v in d["parcel"].items():
+-            ET.SubElement(parcel_elem, k).text = str(v)
+-        notif_elem = ET.SubElement(delivery_elem, "notification")
+-        for k, v in d["notification"].items():
+-            ET.SubElement(notif_elem, k).text = str(v)
++    root = ET.Element("students")
++    for d in data:
++        student_elem = ET.SubElement(root, "student")
++        for key in ["id", "name", "age", "isStudent"]:
++            ET.SubElement(student_elem, key).text = str(d[key])
++        addr_elem = ET.SubElement(student_elem, "address")
++        ET.SubElement(addr_elem, "city").text = d["address"]["city"]
++        ET.SubElement(addr_elem, "street").text = d["address"]["street"]
+ 
+     tree = ET.ElementTree(root)
+-    tree.write("out/delivery.xml", encoding="utf-8", xml_declaration=True)
++    tree.write("out/data.xml", encoding="utf-8", xml_declaration=True)
+ 
+     # YAML
+-    with open("out/delivery.yaml", "w", encoding="utf-8") as f:
+-        yaml.dump(deliveries, f, allow_unicode=True, sort_keys=False)
++    with open("out/data.yaml", "w", encoding="utf-8") as f:
++        yaml.dump(data, f, allow_unicode=True, sort_keys=False)
+ 
+ if __name__ == "__main__":
+     main()
+\ No newline at end of file

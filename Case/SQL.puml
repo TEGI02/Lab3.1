@@ -42,14 +42,6 @@ entity "Parcel" as Parcel {
   parcel_type : TEXT
 }
 
-entity "Notification" as Notification {
-  *notification_id : INTEGER <<PK>>
-  --
-  delivery_id : INTEGER <<FK>>
-  message : TEXT
-  sent_at : TEXT
-}
-
 ' СВЯЗИ
 
 ' 1:N — Один пользователь может создать несколько доставок
@@ -61,7 +53,5 @@ Administrator ||--o{ Delivery
 ' 1:1 — Каждая доставка содержит одну посылку
 Delivery ||--|| Parcel
 
-' 1:1 — Каждая доставка имеет одно уведомление
-Delivery ||--|| Notification
 
 @enduml

@@ -6,15 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="1990973a-80f5-4824-8fd7-13cd1e5e9a49" name="Changes" comment="Добавление UseCase.puml">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Case/SQL.puml" beforeDir="false" afterPath="$PROJECT_DIR$/Case/SQL.puml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Case/UseCase.png" beforeDir="false" afterPath="$PROJECT_DIR$/Case/UseCase.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Case/UseCase.puml" beforeDir="false" afterPath="$PROJECT_DIR$/Case/UseCase.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Case/UseCase2.png" beforeDir="false" afterPath="$PROJECT_DIR$/Case/UseCase2.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Case/UseCase2.puml" beforeDir="false" afterPath="$PROJECT_DIR$/Case/UseCase2.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Case/UseCase3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Case/UseCase3.puml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Case/UseCase4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Case/UseCase4.puml" beforeDir="false" afterPath="$PROJECT_DIR$/Case/SQL.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,24 +44,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.main.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Ilya Div/IdeaProjects/Lab3.1/Case",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Ilya Div/IdeaProjects/Lab3.1/src&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Ilya Div\IdeaProjects\Lab3.1\src" />
       <recent name="C:\Users\Ilya Div\IdeaProjects\Lab3.1\Case" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -158,7 +154,23 @@
       <option name="project" value="LOCAL" />
       <updated>1761599494879</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Добавление UseCase.puml">
+      <option name="closed" value="true" />
+      <created>1762734360354</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1762734360354</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Добавление UseCase.puml">
+      <option name="closed" value="true" />
+      <created>1762734411673</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1762734411673</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -177,5 +189,15 @@
     <MESSAGE value="Изменение" />
     <MESSAGE value="Добавление UseCase.puml" />
     <option name="LAST_COMMIT_MESSAGE" value="Добавление UseCase.puml" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/main.py</url>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
