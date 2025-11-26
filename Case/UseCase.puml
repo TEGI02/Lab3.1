@@ -4,7 +4,6 @@ actor "Администратор2" as User1
 package "Система посылок" {
     usecase "Регистрация посылок" as UC_RegisterOf
 
-    usecase "Выдача посылок" as UC_issuance
     usecase "Архивирование записей о доставке" as UC_report
     usecase "поиск посылок" as UC_search
     usecase "изменение статуса посылки с отображением в бд" as UC_status
@@ -14,7 +13,6 @@ package "Система посылок" {
 }
 actor "Пользователь" as User2
 User1 -- UC_Register2
-UC_Register2 -- UC_issuance
 UC_Register2 -- UC_report
 UC_Register2 -- UC_search
 UC_Register2 -- UC_status
