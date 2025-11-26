@@ -6,10 +6,9 @@ package "Система посылок" {
     usecase "Регистрация посылок" as UC_RegisterOf
     usecase "Создание записей" as UC_Creation
     usecase "Выдача посылок" as UC_issuance
-    usecase "Формирование отчетов" as UC_report
+    usecase "Архивирование записей о доставке" as UC_report
     usecase "поиск посылок" as UC_search
-    usecase "изменение статуса посылки" as UC_status
-    usecase "Отправка уведомлений о состоянии посылки" as UC_notific
+    usecase "изменение статуса посылки с отображением в бд" as UC_status
     usecase "Авторизация" as UC_Register
 }
 actor "Пользователь" as User2
@@ -17,7 +16,6 @@ User1 -- UC_issuance
 User1 -- UC_report
 User1 -- UC_search
 User1 -- UC_status
-User1 -- UC_notific
 User2 -- UC_Register
 UC_Register -- UC_Creation
 UC_Register -- UC_search
